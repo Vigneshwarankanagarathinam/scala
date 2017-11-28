@@ -1,0 +1,28 @@
+----------- Normal Run command -------------------
+
+spark-submit --master yarn --class com.cts.WordCount training-0.0.1-SNAPSHOT.jar $1
+
+--------------- Run command with Kafka brokers -----
+
+BROKERS="wuwvc9hddn78.prod.wudip.com:9092,wuwvc9hddn80.prod.wudip.com:9092,wuwvc9hddn81.prod.wudip.com:9092"
+TOPIC="Sampletesting"
+spark-submit --deploy-mode client --master yarn --verbose \
+--principal bdpstage@CDH.PROD.WUDIP.COM --keytab /opt/bdpstage/bdpstage_nohost.keytab \
+--name "VariableUpdate_v2" \
+--conf spark.driver.cores=16  --conf spark.executor.cores=5 \
+--conf spark.executor.memory=4g --conf spark.driver.memory=6g \
+--conf spark.driver.extraJavaOptions="-Xss64M -XX:+UseG1GC -Dlog4j.configuration=log4j-yarn.properties" \
+--conf spark.executor.extraJavaOptions="-Xss32M -XX:+UseG1GC -Dlog4j.configuration=log4j-yarn.properties" \
+--conf spark.yarn.driver.memoryOverhead=1024 --conf spark.yarn.executor.memoryOverhead=1024 \
+--conf spark.yarn.maxAppAttempts=10 \
+--conf spark.yarn.max.executor.failures=400 \
+--conf spark.locality.wait=10ms \
+--conf spark.task.maxFailures=8 \
+--conf spark.streaming.receiver.writeAheadLog.enable=false \
+--conf spark.yarn.am.attemptFailuresValidityInterval=1h \
+--conf spark.yarn.executor.failuresValidityInterval=1h \
+--conf spark.sql.shuffle.partitions=42 \
+--conf spark.streaming.backpressure.enabled=true \
+--conf spark.speculation=true \
+--class com.cts.DirectKafkaWordCount training-0.0.1-SNAPSHOT.jar $BROKERS $TOPIC
+	

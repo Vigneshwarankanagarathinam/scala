@@ -1,0 +1,22 @@
+When calling parallelize, the elements of the collection are copied to form a distributed dataset that can be operated on in parallel.
+Being able to operate in parallel is a Spark feature.
+
+
+sc.parallelize(List(1,2,3)).flatMap(x=>List(x,x,x)).collect
+
+
+sc.parallelize(List(1,2,3)).map(x=>List(x,x,x)).collect
+
+Lazy Evaluation 
+sc.parallelize(List(1,2,3)).map(x=>List(x,x,x))
+
+
+val parallel = sc.parallelize(1 to 9, 3)
+parallel.mapPartitions( x => List(x.next).iterator).collect
+
+
+map functions with index 
+val parallel = sc.parallelize(1 to 9,6)
+parallel.mapPartitionsWithIndex( (index: Int, it: Iterator[Int]) => it.toList.map(x => index + ", "+x).iterator).collect
+
+
